@@ -111,6 +111,11 @@ else
   mkdir -p $CACHE_TARGET_DIR
 fi
 
+echo "-----> Running installnodejs"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+chmod +x $SCRIPT_DIR/installnodejs
+$SCRIPT_DIR/installnodejs
+
 echo "-----> Building with Leiningen"
 
 # extract environment
@@ -140,10 +145,12 @@ if [ "$BUILD_COMMAND" = "" ]; then
     fi
 fi
 
-echo "       Running: $BUILD_COMMAND"
 
+echo "       Checking: coffescript"
 cd $BUILD_DIR
-PATH=.lein/bin:$PATH JVM_OPTS="-Xmx600m" \
+export PATH=$BUILD_DIR/.lein/bin:$PATH 
+echo "       Running: $BUILD_COMMAND"
+JVM_OPTS="-Xmx600m" \
   LEIN_JVM_OPTS="-Xmx400m -Duser.home=$BUILD_DIR" \
   $BUILD_COMMAND 2>&1 | sed -u 's/^/       /'
 if [ "${PIPESTATUS[*]}" != "0 0" ]; then
